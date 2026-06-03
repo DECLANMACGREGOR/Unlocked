@@ -3,16 +3,34 @@ import { matchSkills } from '../data/skillMatcher'
 import { CATEGORIES } from '../data/skillLibrary'
 import { SKILL_RESOURCES } from '../data/skillResources'
 import WeeklyReport from './WeeklyReport'
+import {
+  CATEGORY_ICONS,
+  IconFlame, IconPhone, IconLightbulb, IconShare,
+  IconLock, IconStar, IconCheck, IconArrowRight, IconX,
+} from './Icons'
 import './HomeTab.css'
 
-const PERIODS = ['Today', 'This Week', 'This Month', 'Custom']
+const PERIODS = ['Today', 'This Week', 'This Month']
 
 const GUIDE_STEPS = [
-  { icon: '⚙️', text: 'Open the Settings app on your iPhone' },
-  { icon: '📱', text: 'Scroll down and tap Screen Time' },
-  { icon: '📊', text: 'Tap "See All Activity" under your name' },
-  { icon: '🔢', text: 'Find "Total Screen Time" at the top — enter that number here' },
+  { Icon: IconPhone,      text: 'Open the Settings app on your iPhone' },
+  { Icon: IconArrowRight, text: 'Scroll down and tap Screen Time' },
+  { Icon: IconCheck,      text: 'Tap "See All Activity" under your name' },
+  { Icon: IconLightbulb,  text: 'Find "Total Screen Time" at the top — enter that number here' },
 ]
+
+const CATEGORY_BLURBS = {
+  languages:   'A new language rewires your brain, opens cultures, and builds lasting connections across borders.',
+  instruments: 'Music trains focus, patience, and memory. Once learned, it stays with you for life.',
+  coding:      'Code is leverage. Build tools, automate repetitive work, or make a career pivot.',
+  fitness:     'Physical training elevates every other area — energy, sleep, confidence, and focus.',
+  creative:    'Creative skills make you irreplaceable. They give you a channel no algorithm can replicate.',
+  business:    'Understanding business multiplies the value of everything else you know.',
+  culinary:    'Cooking daily is one of the highest-ROI skills — health, cost, and connection all improve.',
+  mind:        'Cognitive training compounds over time. A sharper mind benefits every decision you make.',
+  diy:         'Hands-on skills give you independence and save thousands in maintenance and repair costs.',
+  wellness:    'Wellbeing is the foundation everything else is built on. Invest here first.',
+}
 
 // --- Streak helpers ---
 function getStreak(history) {
@@ -35,8 +53,26 @@ function getStreak(history) {
   return streak
 }
 
-function getTotalHours(history) {
-  return history.reduce((s, e) => s + e.hours, 0)
+function getLastHoursForPeriod(history, period) {
+  const entry = history.find(e => e.period === period)
+  return entry ? entry.hours : null
+}
+
+function periodLabel(period) {
+  if (period === 'Today') return 'today'
+  if (period === 'This Week') return 'this week'
+  return 'this month'
+}
+
+function countFittable(completable, totalHours) {
+  const sorted = [...completable].sort((a, b) => a.hours - b.hours)
+  let remaining = totalHours
+  let count = 0
+  for (const sk of sorted) {
+    if (remaining >= sk.hours) { remaining -= sk.hours; count++ }
+    else break
+  }
+  return count
 }
 
 // --- Sub-components ---
@@ -50,16 +86,17 @@ function HowToGuide({ onClose }) {
           <button className="guide-close" onClick={onClose}>Done</button>
         </div>
         <div className="guide-steps">
-          {GUIDE_STEPS.map((step, i) => (
+          {GUIDE_STEPS.map(({ Icon, text }, i) => (
             <div key={i} className="guide-step">
               <div className="guide-step-num">{i + 1}</div>
-              <div className="guide-step-icon">{step.icon}</div>
-              <div className="guide-step-text">{step.text}</div>
+              <Icon size={20} color="var(--accent)" className="guide-step-icon" />
+              <div className="guide-step-text">{text}</div>
             </div>
           ))}
         </div>
         <div className="guide-tip">
-          💡 The hours shown match the period you select — daily, weekly, etc.
+          <IconLightbulb size={15} color="var(--text2)" />
+          The hours shown match the period you select — daily, weekly, etc.
         </div>
       </div>
     </div>
@@ -74,7 +111,7 @@ function ProgressArc({ progress, size = 44, stroke = 4 }) {
   const color = progress >= 1 ? 'var(--green)' : 'var(--accent)'
   return (
     <svg width={size} height={size} style={{ transform: 'rotate(-90deg)' }}>
-      <circle cx={size/2} cy={size/2} r={r} fill="none" stroke="rgba(255,255,255,0.1)" strokeWidth={stroke} />
+      <circle cx={size/2} cy={size/2} r={r} fill="none" stroke="var(--border)" strokeWidth={stroke} />
       <circle cx={size/2} cy={size/2} r={r} fill="none" stroke={color} strokeWidth={stroke}
         strokeLinecap="round" strokeDasharray={circ} strokeDashoffset={offset}
         style={{ transition: 'stroke-dashoffset 0.5s ease' }} />
@@ -82,33 +119,86 @@ function ProgressArc({ progress, size = 44, stroke = 4 }) {
   )
 }
 
-function SkillCard({ skill, inputHours, isPremium, onShowPremium }) {
-  const progress = inputHours / skill.hours
-  const done = inputHours >= skill.hours
+function SkillCard({ skill, inputHours, onStartLearning }) {
   const cat = CATEGORIES[skill.category]
-  const remaining = skill.hours - inputHours
-  const resource = SKILL_RESOURCES[skill.name]
+  const CatIcon = CATEGORY_ICONS[skill.category]
+  const surplus = inputHours - skill.hours
+  const surplusLabel = surplus === 0
+    ? 'Perfect fit'
+    : `${surplus % 1 === 0 ? surplus : surplus.toFixed(1)}h left over`
 
   return (
     <div className="skill-card">
-      <div className="skill-card-top">
-        <ProgressArc progress={progress} />
-        <span className="cat-badge" style={{ background: cat.color }}>{cat.label}</span>
+      <span className="cat-badge" style={{ background: cat.color }}>
+        {CatIcon && <CatIcon size={10} color="#fff" />}
+        {cat.label}
+      </span>
+      <div className="skill-card-arc">
+        <ProgressArc progress={1} size={64} stroke={5} />
       </div>
       <div className="skill-card-name">{skill.name}</div>
-      <div className="skill-card-hours">{skill.hours}h total</div>
-      <div className="skill-card-status" style={{ color: done ? 'var(--green)' : 'var(--text2)' }}>
-        {done ? 'Completed ✓' : `${remaining % 1 === 0 ? remaining : remaining.toFixed(1)}h away`}
+      <div className="skill-card-hours">{skill.hours}h to learn</div>
+      <div className="skill-card-surplus">{surplusLabel}</div>
+      <button className="start-learning-btn" onClick={() => onStartLearning(skill)}>
+        Start Learning
+      </button>
+    </div>
+  )
+}
+
+function SkillLanding({ skill, isPremium, onShowPremium, onClose }) {
+  const resource = SKILL_RESOURCES[skill.name]
+  const cat = CATEGORIES[skill.category]
+  const CatIcon = CATEGORY_ICONS[skill.category]
+  const blurb = CATEGORY_BLURBS[skill.category]
+
+  function handleStart() {
+    if (!isPremium) { onShowPremium(); return }
+    if (resource?.url) window.open(resource.url, '_blank', 'noopener noreferrer')
+    else onClose()
+  }
+
+  return (
+    <div className="landing-overlay" onClick={onClose}>
+      <div className="landing-sheet" onClick={e => e.stopPropagation()}>
+        <div className="landing-handle" />
+
+        <div className="landing-cat" style={{ color: cat.color }}>
+          {CatIcon && <CatIcon size={16} color={cat.color} />}
+          <span>{cat.label}</span>
+        </div>
+
+        <h2 className="landing-title">{skill.name}</h2>
+        <div className="landing-meta">~{skill.hours} hours to learn</div>
+
+        <p className="landing-blurb">{blurb}</p>
+
+        <div className="landing-stat-row">
+          <div className="landing-stat">
+            <div className="landing-stat-val">{skill.hours}h</div>
+            <div className="landing-stat-label">Time investment</div>
+          </div>
+          <div className="landing-stat-divider" />
+          <div className="landing-stat">
+            <div className="landing-stat-val">{cat.label}</div>
+            <div className="landing-stat-label">Category</div>
+          </div>
+          <div className="landing-stat-divider" />
+          <div className="landing-stat">
+            <div className="landing-stat-val">∞</div>
+            <div className="landing-stat-label">Payoff</div>
+          </div>
+        </div>
+
+        <button className="landing-cta" onClick={handleStart}>
+          {isPremium && resource
+            ? `Open ${resource.label} →`
+            : <><IconLock size={15} color="#fff" /> Unlock to Start Learning</>
+          }
+        </button>
+
+        <button className="landing-dismiss" onClick={onClose}>Not now</button>
       </div>
-      {resource && (
-        isPremium
-          ? <a className="skill-resource-link" href={resource.url} target="_blank" rel="noopener noreferrer">
-              {resource.label} →
-            </a>
-          : <button className="skill-resource-lock" onClick={onShowPremium}>
-              🔒 Start learning →
-            </button>
-      )}
     </div>
   )
 }
@@ -120,9 +210,12 @@ function ComboCard({ skills, totalHours }) {
     <div className="combo-card">
       {skills.map(sk => {
         const cat = CATEGORIES[sk.category]
+        const CatIcon = CATEGORY_ICONS[sk.category]
         return (
           <div key={sk.id} className="combo-row">
-            <span className="combo-icon">{cat.icon}</span>
+            {CatIcon
+              ? <CatIcon size={16} color={cat.color} className="combo-icon" />
+              : <span className="combo-icon">{cat.icon}</span>}
             <span className="combo-name">{sk.name}</span>
             <span className="combo-hrs">{sk.hours}h</span>
           </div>
@@ -140,9 +233,8 @@ function ComboCard({ skills, totalHours }) {
 
 function AlmostRow({ skill, inputHours, onAddHours }) {
   const progress = inputHours / skill.hours
-  const needed = (skill.hours - inputHours)
+  const needed = skill.hours - inputHours
   const neededDisplay = needed % 1 === 0 ? needed : needed.toFixed(1)
-  const cat = CATEGORIES[skill.category]
   return (
     <div className="almost-row">
       <ProgressArc progress={progress} size={40} />
@@ -161,7 +253,7 @@ function ShareCard({ result, period }) {
   const [copied, setCopied] = useState(false)
   const topSkills = result.completable.slice(0, 3).map(s => s.name)
   const text = topSkills.length
-    ? `In ${result.totalInputHours}h of screen time I could have learned: ${topSkills.join(', ')}. What could you learn? → screentimeskills-pwa.vercel.app`
+    ? `In ${result.totalInputHours}h of screen time I could have learned: ${topSkills.join(', ')}. What could you learn? → unlocked.app`
     : null
   if (!text) return null
 
@@ -176,7 +268,8 @@ function ShareCard({ result, period }) {
     <div className="share-card">
       <div className="share-preview">{text}</div>
       <button className="share-btn" onClick={copy}>
-        {copied ? '✓ Copied!' : '📤 Share your result'}
+        <IconShare size={15} color="#fff" />
+        {copied ? 'Copied!' : 'Share your result'}
       </button>
     </div>
   )
@@ -186,13 +279,65 @@ function ShareCard({ result, period }) {
 
 export default function HomeTab({ allSkills, addHistoryEntry, history, isPremium, onShowPremium }) {
   const [inputText, setInputText] = useState(() => localStorage.getItem('sts_last_hours') || '')
-  const [period, setPeriod] = useState(() => localStorage.getItem('sts_last_period') || 'This Week')
-  const [result, setResult] = useState(null)
+  const [period, setPeriod]       = useState(() => localStorage.getItem('sts_last_period') || 'This Week')
+  const [result, setResult]       = useState(null)
   const [showGuide, setShowGuide] = useState(false)
-  const inputRef = useRef(null)
+  const [sliderIndex, setSliderIndex]     = useState(0)
+  const [skillCatFilter, setSkillCatFilter] = useState(null)
+  const [landingSkill, setLandingSkill]   = useState(null)
 
-  const streak = getStreak(history)
-  const totalTracked = getTotalHours(history)
+  const inputRef  = useRef(null)
+  const trackRef  = useRef(null)  // scroll-snap track
+
+  // Category filter drag (desktop)
+  const catFilterRef = useRef(null)
+  const catDrag      = useRef(null)
+  const catDragMoved = useRef(false)
+
+  const streak         = getStreak(history)
+  const lastPeriodHours = getLastHoursForPeriod(history, period)
+
+  const fittable = result ? countFittable(result.completable, hours) : 0
+
+  const completableCategories = result
+    ? [...new Set(result.completable.map(sk => sk.category))]
+    : []
+  const filteredCompletable = result
+    ? (skillCatFilter ? result.completable.filter(sk => sk.category === skillCatFilter) : result.completable)
+    : []
+
+  // Reset slider when filter or result changes
+  useEffect(() => {
+    setSliderIndex(0)
+    const t = trackRef.current
+    if (t) t.scrollLeft = 0
+  }, [skillCatFilter, result])
+
+  // Track which slide is visible via scroll position
+  function onTrackScroll() {
+    const t = trackRef.current
+    if (!t || !t.offsetWidth) return
+    const idx = Math.round(t.scrollLeft / t.offsetWidth)
+    if (idx !== sliderIndex) setSliderIndex(idx)
+  }
+
+  // Category chip drag (desktop)
+  function onCatPointerDown(e) {
+    if (e.pointerType === 'touch') return
+    catDragMoved.current = false
+    catDrag.current = { startX: e.clientX, startScroll: catFilterRef.current.scrollLeft }
+    catFilterRef.current.setPointerCapture(e.pointerId)
+  }
+  function onCatPointerMove(e) {
+    if (!catDrag.current) return
+    const dx = catDrag.current.startX - e.clientX
+    if (Math.abs(dx) > 8) catDragMoved.current = true
+    catFilterRef.current.scrollLeft = catDrag.current.startScroll + dx
+  }
+  function onCatPointerUp() {
+    catDrag.current = null
+    setTimeout(() => { catDragMoved.current = false }, 0)
+  }
 
   useEffect(() => {
     const saved = localStorage.getItem('sts_last_hours')
@@ -204,10 +349,6 @@ export default function HomeTab({ allSkills, addHistoryEntry, history, isPremium
   }, [])
 
   function handleOpenSettings() {
-    // Attempt iOS deep link to Screen Time settings.
-    // This works in native apps but Apple blocks it in Safari/PWA.
-    // We try it anyway, then fall back to the guide after a short delay
-    // if the page is still visible (meaning the deep link didn't work).
     window.location.href = 'App-Prefs:root=SCREEN_TIME'
     const timer = setTimeout(() => {
       if (!document.hidden) setShowGuide(true)
@@ -220,6 +361,8 @@ export default function HomeTab({ allSkills, addHistoryEntry, history, isPremium
     const hours = parseFloat(inputText)
     if (!hours || hours <= 0) return
     setResult(matchSkills(hours, allSkills))
+    setSkillCatFilter(null)
+    setSliderIndex(0)
     addHistoryEntry(hours, period)
     localStorage.setItem('sts_last_hours', inputText)
     localStorage.setItem('sts_last_period', period)
@@ -231,8 +374,7 @@ export default function HomeTab({ allSkills, addHistoryEntry, history, isPremium
     const next = current + extra
     const rounded = Math.round(next * 10) / 10
     setInputText(String(rounded))
-    const newResult = matchSkills(rounded, allSkills)
-    setResult(newResult)
+    setResult(matchSkills(rounded, allSkills))
     localStorage.setItem('sts_last_hours', String(rounded))
   }
 
@@ -242,27 +384,28 @@ export default function HomeTab({ allSkills, addHistoryEntry, history, isPremium
     <div className="home-tab">
       <div className="input-section">
 
-        {/* Header with streak */}
+        {/* Header */}
         <div className="home-header">
-          <h1 className="home-title">ScreenTimeSkills</h1>
+          <h1 className="home-title">Unlocked</h1>
           {streak > 0 && (
             <div className="streak-badge">
-              🔥 {streak} day{streak !== 1 ? 's' : ''}
+              <IconFlame size={14} color="#FFA500" />
+              {streak} day{streak !== 1 ? 's' : ''}
             </div>
           )}
         </div>
 
-        {/* Total tracked stat */}
-        {totalTracked > 0 && (
+        {lastPeriodHours != null && (
           <div className="tracked-stat">
-            You've tracked <strong>{totalTracked % 1 === 0 ? totalTracked : totalTracked.toFixed(1)} hours</strong> of screen time total
+            You've spent <strong>{lastPeriodHours % 1 === 0 ? lastPeriodHours : lastPeriodHours.toFixed(1)} hours</strong> {periodLabel(period)}
           </div>
         )}
 
-        {/* Settings deep link + nudge */}
+        {/* Screen Time shortcut */}
         <div className="settings-nudge-row">
           <button className="open-settings-btn" onClick={handleOpenSettings}>
-            📱 Open Screen Time
+            <IconPhone size={15} color="var(--text)" />
+            Open Screen Time
           </button>
           <button className="nudge-guide-btn" onClick={() => setShowGuide(true)}>
             How? →
@@ -281,7 +424,7 @@ export default function HomeTab({ allSkills, addHistoryEntry, history, isPremium
             onKeyDown={e => e.key === 'Enter' && handleCalculate()}
             className="hours-input"
           />
-          <span className="hours-label">hrs</span>
+          <span className="hours-label">Hours Spent</span>
         </div>
 
         {/* Period pills */}
@@ -302,11 +445,10 @@ export default function HomeTab({ allSkills, addHistoryEntry, history, isPremium
       {result && (
         <div className="results">
 
-          {/* Motivational headline */}
           {result.completable.length > 0 && (
             <div className="motivation-banner">
-              🎉 With {hours % 1 === 0 ? hours : hours.toFixed(1)} hours you could have learned{' '}
-              <strong>{result.completable.length} skill{result.completable.length !== 1 ? 's' : ''}</strong>
+              You could have learned{' '}
+              <strong>{fittable} of these {result.completable.length} skills</strong>
             </div>
           )}
 
@@ -314,13 +456,76 @@ export default function HomeTab({ allSkills, addHistoryEntry, history, isPremium
             <section>
               <div className="section-header">
                 <span className="section-title">You could have learned</span>
-                <span className="section-sub">{result.completable.length} fully completable</span>
+                <span className="section-sub">
+                  {skillCatFilter
+                    ? `${filteredCompletable.length} of ${result.completable.length}`
+                    : `${result.completable.length} skill${result.completable.length !== 1 ? 's' : ''} to choose from`}
+                </span>
               </div>
-              <div className="cards-scroll">
-                {result.completable.map(sk => (
-                  <SkillCard key={sk.id} skill={sk} inputHours={hours} isPremium={isPremium} onShowPremium={onShowPremium} />
-                ))}
+
+              {/* Category filter */}
+              <div
+                className="skill-cat-filter"
+                ref={catFilterRef}
+                onPointerDown={onCatPointerDown}
+                onPointerMove={onCatPointerMove}
+                onPointerUp={onCatPointerUp}
+                onPointerCancel={onCatPointerUp}
+              >
+                <button
+                  className={`skill-cat-chip ${!skillCatFilter ? 'active' : ''}`}
+                  onClick={() => { if (catDragMoved.current) return; setSkillCatFilter(null) }}
+                >All</button>
+                {completableCategories.map(cat => {
+                  const CatIcon = CATEGORY_ICONS[cat]
+                  const isActive = skillCatFilter === cat
+                  return (
+                    <button
+                      key={cat}
+                      className={`skill-cat-chip ${isActive ? 'active' : ''}`}
+                      style={isActive ? { background: CATEGORIES[cat].color, borderColor: CATEGORIES[cat].color } : {}}
+                      onClick={() => { if (catDragMoved.current) return; setSkillCatFilter(isActive ? null : cat) }}
+                    >
+                      {CatIcon && <CatIcon size={12} color={isActive ? '#fff' : CATEGORIES[cat].color} />}
+                      {CATEGORIES[cat].label}
+                    </button>
+                  )
+                })}
               </div>
+
+              {/* CSS scroll-snap slider */}
+              {filteredCompletable.length > 0 ? (
+                <div className="skill-slider">
+                  <div
+                    className="slider-track"
+                    ref={trackRef}
+                    onScroll={onTrackScroll}
+                  >
+                    {filteredCompletable.map(sk => (
+                      <div key={sk.id} className="slider-slide">
+                        <SkillCard
+                          skill={sk}
+                          inputHours={hours}
+                          isPremium={isPremium}
+                          onShowPremium={onShowPremium}
+                          onStartLearning={setLandingSkill}
+                        />
+                      </div>
+                    ))}
+                  </div>
+                  <div className="slider-status">
+                    <div className="slider-progress-track">
+                      <div
+                        className="slider-progress-fill"
+                        style={{ width: `${((sliderIndex + 1) / filteredCompletable.length) * 100}%` }}
+                      />
+                    </div>
+                    <span className="slider-count">{sliderIndex + 1} / {filteredCompletable.length}</span>
+                  </div>
+                </div>
+              ) : (
+                <div className="slider-empty">No skills in this category</div>
+              )}
             </section>
           )}
 
@@ -339,7 +544,7 @@ export default function HomeTab({ allSkills, addHistoryEntry, history, isPremium
           {result.almostThere.length > 0 && (
             <section>
               <div className="section-header">
-                <span className="section-title">So close!</span>
+                <span className="section-title">So close</span>
                 <span className="section-sub">Reduce screen time by this much and you have it</span>
               </div>
               {result.almostThere.map(sk => (
@@ -348,17 +553,16 @@ export default function HomeTab({ allSkills, addHistoryEntry, history, isPremium
             </section>
           )}
 
-          {/* Weekly report — premium only */}
           <section>
             <div className="section-header">
               <span className="section-title">Weekly Trend</span>
-              {!isPremium && <span className="premium-tag" onClick={onShowPremium}>✨ Premium</span>}
+              {!isPremium && <span className="premium-tag" onClick={onShowPremium}><IconStar size={11} color="var(--accent)" /> Premium</span>}
             </div>
             {isPremium
               ? <WeeklyReport history={history} />
               : <div className="premium-blur-card" onClick={onShowPremium}>
                   <div className="premium-blur-inner">
-                    <div className="premium-blur-icon">📈</div>
+                    <IconStar size={32} color="var(--accent)" className="premium-blur-icon" />
                     <div className="premium-blur-text">See if your screen time is trending down</div>
                     <div className="premium-blur-cta">Unlock with Premium →</div>
                   </div>
@@ -367,14 +571,12 @@ export default function HomeTab({ allSkills, addHistoryEntry, history, isPremium
           </section>
 
           {result.completable.length > 0 && (
-            <section>
-              <ShareCard result={result} period={period} />
-            </section>
+            <section><ShareCard result={result} period={period} /></section>
           )}
 
           {!result.completable.length && !result.almostThere.length && (
             <div className="no-results">
-              <div className="no-results-icon">💡</div>
+              <IconLightbulb size={52} color="var(--text2)" className="no-results-icon" />
               <div className="no-results-title">Not enough hours yet</div>
               <div className="no-results-sub">Even small amounts add up. Keep tracking!</div>
             </div>
@@ -385,7 +587,7 @@ export default function HomeTab({ allSkills, addHistoryEntry, history, isPremium
       {!result && (
         <div className="empty-home">
           <div className="empty-examples">
-            <div className="empty-example-item">📱 40h of scrolling</div>
+            <div className="empty-example-item">40h of scrolling</div>
             <div className="empty-example-arrow">=</div>
             <div className="empty-example-skills">
               <span>Python Basics</span>
@@ -398,6 +600,15 @@ export default function HomeTab({ allSkills, addHistoryEntry, history, isPremium
       )}
 
       {showGuide && <HowToGuide onClose={() => setShowGuide(false)} />}
+
+      {landingSkill && (
+        <SkillLanding
+          skill={landingSkill}
+          isPremium={isPremium}
+          onShowPremium={() => { setLandingSkill(null); onShowPremium() }}
+          onClose={() => setLandingSkill(null)}
+        />
+      )}
     </div>
   )
 }

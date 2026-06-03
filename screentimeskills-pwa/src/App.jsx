@@ -6,12 +6,13 @@ import LibraryTab from './components/LibraryTab'
 import HistoryTab from './components/HistoryTab'
 import Onboarding from './components/Onboarding'
 import PremiumModal from './components/PremiumModal'
+import { IconHome, IconLibrary, IconHistory } from './components/Icons'
 import './App.css'
 
 const TABS = [
-  { id: 'home',    label: 'Home',    icon: '⏱' },
-  { id: 'library', label: 'Library', icon: '📚' },
-  { id: 'history', label: 'History', icon: '🕐' },
+  { id: 'home',    label: 'Home',    Icon: IconHome },
+  { id: 'library', label: 'Library', Icon: IconLibrary },
+  { id: 'history', label: 'History', Icon: IconHistory },
 ]
 
 export default function App() {
@@ -49,7 +50,9 @@ export default function App() {
         {activeTab === 'home' && (
           <HomeTab {...skillStore} isPremium={isPremium} onShowPremium={() => setShowPremium(true)} />
         )}
-        {activeTab === 'library' && <LibraryTab {...skillStore} />}
+        {activeTab === 'library' && (
+          <LibraryTab {...skillStore} isPremium={isPremium} onShowPremium={() => setShowPremium(true)} />
+        )}
         {activeTab === 'history' && (
           <HistoryTab
             {...skillStore}
@@ -61,14 +64,14 @@ export default function App() {
       </div>
 
       <nav className="tab-bar">
-        {TABS.map(tab => (
+        {TABS.map(({ id, label, Icon }) => (
           <button
-            key={tab.id}
-            className={`tab-item ${activeTab === tab.id ? 'active' : ''}`}
-            onClick={() => setActiveTab(tab.id)}
+            key={id}
+            className={`tab-item ${activeTab === id ? 'active' : ''}`}
+            onClick={() => setActiveTab(id)}
           >
-            <span className="tab-icon">{tab.icon}</span>
-            <span className="tab-label">{tab.label}</span>
+            <Icon size={22} className="tab-icon" />
+            <span className="tab-label">{label}</span>
           </button>
         ))}
       </nav>

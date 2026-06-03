@@ -1,18 +1,46 @@
 :root {
-  --accent: #5B6EF5;
-  --bg: #000;
-  --bg2: #111;
-  --bg3: #1c1c1e;
-  --border: #2c2c2e;
-  --text: #fff;
-  --text2: #8e8e93;
-  --green: #30d158;
-  --radius: 14px;
-  --cat-languages:   #5B6EF5;
-  --cat-instruments: #F57C20;
-  --cat-coding:      #20C997;
-  --cat-fitness:     #E8394A;
-  --cat-creative:    #A855F7;
+  /* Light mode (default) — clinical precision */
+  --accent:      #1A73E8;
+  --accent-soft: rgba(26,115,232,0.10);
+  --bg:          #EDF1F8;
+  --bg2:         #FFFFFF;
+  --bg3:         #FFFFFF;
+  --border:      #CBD5E8;
+  --shadow:      0 1px 4px rgba(15,25,60,0.07), 0 0 0 1px rgba(15,25,60,0.05);
+  --tab-bg:      rgba(255,255,255,0.94);
+  --text:        #0F1923;
+  --text2:       #6B7B9A;
+  --green:       #0A9E74;
+  --radius:      14px;
+  --radius-sm:   10px;
+
+  --cat-languages:   #1A73E8;
+  --cat-instruments: #B85C00;
+  --cat-coding:      #087E62;
+  --cat-fitness:     #C0185A;
+  --cat-creative:    #6D28D9;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --accent:      #5B9BF0;
+    --accent-soft: rgba(91,155,240,0.12);
+    --bg:          #0C1829;
+    --bg2:         #142033;
+    --bg3:         #1C2E46;
+    --border:      #27405D;
+    --shadow:      none;
+    --tab-bg:      rgba(12,24,41,0.95);
+    --text:        #E2EBF8;
+    --text2:       #7A9ABE;
+    --green:       #2DD4A0;
+
+    --cat-languages:   #5B9BF0;
+    --cat-instruments: #FB9B4A;
+    --cat-coding:      #2DD4A0;
+    --cat-fitness:     #F0608A;
+    --cat-creative:    #B07EF7;
+  }
 }
 
 * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }

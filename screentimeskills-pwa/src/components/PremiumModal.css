@@ -96,10 +96,7 @@
   font-size: 40px;
   font-weight: 800;
   letter-spacing: -1px;
-  background: linear-gradient(135deg, var(--accent), #a855f7);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
+  color: var(--accent);
 }
 
 .premium-price-sub {
@@ -111,7 +108,7 @@
   width: 100%;
   padding: 18px;
   border-radius: var(--radius);
-  background: linear-gradient(135deg, var(--accent), #a855f7);
+  background: var(--accent);
   color: #fff;
   font-size: 17px;
   font-weight: 700;

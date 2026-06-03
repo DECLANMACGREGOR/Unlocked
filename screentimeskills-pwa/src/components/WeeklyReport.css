@@ -2,6 +2,7 @@
   background: var(--bg3);
   border-radius: var(--radius);
   padding: 16px;
+  box-shadow: var(--shadow);
 }
 
 .weekly-report.empty {
@@ -31,9 +32,9 @@
   padding: 3px 10px;
   border-radius: 12px;
 }
-.wr-trend-down { background: rgba(48,209,88,0.15); color: var(--green); }
-.wr-trend-up   { background: rgba(255,69,58,0.15);  color: #ff453a; }
-.wr-trend-flat { background: rgba(255,255,255,0.08); color: var(--text2); }
+.wr-trend-down { background: rgba(10,158,116,0.12); color: var(--green); }
+.wr-trend-up   { background: rgba(200,30,70,0.10);  color: #C0185A; }
+.wr-trend-flat { background: var(--bg);             color: var(--text2); }
 
 .wr-bars {
   display: flex;
