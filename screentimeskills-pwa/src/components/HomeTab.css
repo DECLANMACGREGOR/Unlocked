@@ -1,0 +1,552 @@
+.home-tab {
+  padding-bottom: 24px;
+}
+
+/* Input */
+.input-section {
+  padding: 24px 16px 20px;
+  border-bottom: 1px solid var(--border);
+}
+
+.home-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+
+.home-title {
+  font-size: 28px;
+  font-weight: 700;
+  letter-spacing: -0.5px;
+}
+
+.streak-badge {
+  background: rgba(255, 160, 0, 0.15);
+  color: #FFA500;
+  font-size: 13px;
+  font-weight: 700;
+  padding: 5px 12px;
+  border-radius: 20px;
+  border: 1px solid rgba(255, 160, 0, 0.3);
+}
+
+.tracked-stat {
+  font-size: 13px;
+  color: var(--text2);
+  margin-bottom: 12px;
+  line-height: 1.4;
+}
+
+.tracked-stat strong {
+  color: var(--text);
+}
+
+/* Motivation banner */
+.motivation-banner {
+  background: linear-gradient(135deg, rgba(91,110,245,0.15), rgba(168,85,247,0.15));
+  border: 1px solid rgba(91,110,245,0.3);
+  border-radius: var(--radius);
+  padding: 14px 16px;
+  font-size: 15px;
+  color: var(--text);
+  line-height: 1.4;
+  margin-bottom: 4px;
+}
+
+/* Almost there add button */
+.almost-add-btn {
+  background: var(--accent);
+  color: #fff;
+  font-size: 12px;
+  font-weight: 700;
+  padding: 6px 12px;
+  border-radius: 20px;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+/* Share card */
+.share-card {
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 16px;
+  margin-top: 4px;
+}
+
+.share-preview {
+  font-size: 13px;
+  color: var(--text2);
+  line-height: 1.5;
+  margin-bottom: 12px;
+  font-style: italic;
+}
+
+.share-btn {
+  width: 100%;
+  padding: 12px;
+  border-radius: var(--radius-sm);
+  background: var(--accent);
+  color: #fff;
+  font-size: 14px;
+  font-weight: 600;
+  transition: opacity 0.15s;
+}
+.share-btn:active { opacity: 0.8; }
+
+/* Affiliate resource link on skill card */
+.skill-resource-link {
+  display: block;
+  margin-top: 6px;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--accent);
+  text-decoration: none;
+}
+.skill-resource-link:active { opacity: 0.7; }
+
+.skill-resource-lock {
+  display: block;
+  margin-top: 6px;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text2);
+  text-align: left;
+}
+
+/* Premium tag inline */
+.premium-tag {
+  font-size: 11px;
+  font-weight: 700;
+  color: #a855f7;
+  background: rgba(168,85,247,0.12);
+  padding: 3px 8px;
+  border-radius: 10px;
+  cursor: pointer;
+}
+
+/* Premium blur/teaser card */
+.premium-blur-card {
+  background: var(--bg3);
+  border-radius: var(--radius);
+  padding: 20px;
+  cursor: pointer;
+  border: 1px dashed var(--border);
+  transition: border-color 0.15s;
+}
+.premium-blur-card:active { border-color: #a855f7; }
+
+.premium-blur-inner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  text-align: center;
+  filter: blur(0px);
+}
+
+.premium-blur-icon { font-size: 32px; }
+.premium-blur-text {
+  font-size: 14px;
+  color: var(--text2);
+}
+.premium-blur-cta {
+  font-size: 13px;
+  font-weight: 700;
+  color: #a855f7;
+  margin-top: 4px;
+}
+
+/* Better empty state */
+.empty-home {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+  padding: 40px 24px;
+  text-align: center;
+}
+
+.empty-examples {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  background: var(--bg3);
+  border-radius: var(--radius);
+  padding: 20px;
+  width: 100%;
+}
+
+.empty-example-item {
+  font-size: 17px;
+  font-weight: 600;
+}
+
+.empty-example-arrow {
+  font-size: 22px;
+  color: var(--accent);
+  font-weight: 700;
+}
+
+.empty-example-skills {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 14px;
+  color: var(--green);
+  font-weight: 500;
+}
+
+.empty-home-sub {
+  font-size: 14px;
+  color: var(--text2);
+  line-height: 1.6;
+  max-width: 280px;
+}
+
+/* Settings deep link row */
+.settings-nudge-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 20px;
+}
+
+.open-settings-btn {
+  flex: 1;
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 11px 14px;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text);
+  text-align: left;
+  transition: background 0.15s;
+}
+.open-settings-btn:active { background: var(--bg2); }
+
+.nudge-guide-btn {
+  background: rgba(91,110,245,0.12);
+  border-radius: var(--radius-sm);
+  padding: 11px 14px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--accent);
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+/* How-to guide sheet */
+.guide-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.7);
+  display: flex;
+  align-items: flex-end;
+  z-index: 100;
+  backdrop-filter: blur(4px);
+}
+
+.guide-sheet {
+  width: 100%;
+  max-width: 430px;
+  margin: 0 auto;
+  background: var(--bg2);
+  border-radius: 20px 20px 0 0;
+  padding: 24px 16px max(32px, env(safe-area-inset-bottom));
+  border-top: 1px solid var(--border);
+}
+
+.guide-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 24px;
+}
+
+.guide-title {
+  font-size: 17px;
+  font-weight: 700;
+}
+
+.guide-close {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--accent);
+}
+
+.guide-steps {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin-bottom: 20px;
+}
+
+.guide-step {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.guide-step-num {
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  background: var(--accent);
+  color: #fff;
+  font-size: 13px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.guide-step-icon {
+  font-size: 22px;
+  flex-shrink: 0;
+}
+
+.guide-step-text {
+  font-size: 15px;
+  line-height: 1.4;
+  color: var(--text);
+}
+
+.guide-tip {
+  background: var(--bg3);
+  border-radius: var(--radius-sm);
+  padding: 12px 14px;
+  font-size: 13px;
+  color: var(--text2);
+  line-height: 1.5;
+}
+
+.hours-input-row {
+  display: flex;
+  align-items: baseline;
+  justify-content: center;
+  gap: 8px;
+  margin-bottom: 20px;
+}
+
+.hours-input {
+  font-size: 72px;
+  font-weight: 700;
+  width: 160px;
+  text-align: center;
+  color: var(--text);
+  background: none;
+  /* Remove number input arrows */
+  -moz-appearance: textfield;
+}
+.hours-input::-webkit-outer-spin-button,
+.hours-input::-webkit-inner-spin-button { -webkit-appearance: none; }
+
+.hours-label {
+  font-size: 28px;
+  font-weight: 500;
+  color: var(--text2);
+}
+
+.period-pills {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  justify-content: center;
+  margin-bottom: 20px;
+}
+
+.period-pill {
+  padding: 6px 14px;
+  border-radius: 20px;
+  font-size: 13px;
+  font-weight: 500;
+  background: var(--bg3);
+  color: var(--text2);
+  transition: all 0.15s;
+}
+.period-pill.active {
+  background: var(--accent);
+  color: #fff;
+}
+
+.calc-btn {
+  width: 100%;
+  padding: 16px;
+  border-radius: var(--radius);
+  background: var(--accent);
+  color: #fff;
+  font-size: 16px;
+  font-weight: 600;
+  transition: opacity 0.15s, transform 0.1s;
+}
+.calc-btn:active { transform: scale(0.98); opacity: 0.9; }
+.calc-btn:disabled { opacity: 0.4; }
+
+/* Results */
+.results {
+  padding: 0 16px;
+}
+
+.results section {
+  margin-top: 28px;
+}
+
+.section-header {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.section-title {
+  font-size: 17px;
+  font-weight: 700;
+}
+
+.section-sub {
+  font-size: 12px;
+  color: var(--text2);
+}
+
+/* Skill cards horizontal scroll */
+.cards-scroll {
+  display: flex;
+  gap: 12px;
+  overflow-x: auto;
+  padding-bottom: 4px;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+}
+.cards-scroll::-webkit-scrollbar { display: none; }
+
+.skill-card {
+  flex-shrink: 0;
+  width: 150px;
+  background: var(--bg3);
+  border-radius: var(--radius);
+  padding: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.skill-card-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.cat-badge {
+  font-size: 10px;
+  font-weight: 600;
+  color: #fff;
+  padding: 2px 8px;
+  border-radius: 10px;
+  white-space: nowrap;
+}
+
+.skill-card-name {
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 1.3;
+}
+
+.skill-card-hours {
+  font-size: 11px;
+  color: var(--text2);
+}
+
+.skill-card-status {
+  font-size: 11px;
+  font-weight: 600;
+}
+
+/* Combo cards */
+.combo-card {
+  background: var(--bg3);
+  border-radius: var(--radius);
+  padding: 14px;
+  margin-bottom: 10px;
+}
+
+.combo-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 6px 0;
+  border-bottom: 1px solid var(--border);
+}
+.combo-row:last-of-type { border-bottom: none; }
+
+.combo-icon { font-size: 16px; }
+.combo-name { flex: 1; font-size: 14px; }
+.combo-hrs  { font-size: 12px; color: var(--text2); }
+
+.combo-footer {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.combo-bar-track {
+  flex: 1;
+  height: 4px;
+  background: var(--border);
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.combo-bar-fill {
+  height: 100%;
+  border-radius: 2px;
+  transition: width 0.5s ease;
+}
+
+.combo-pct {
+  font-size: 12px;
+  font-weight: 600;
+  min-width: 32px;
+  text-align: right;
+}
+
+/* Almost there */
+.almost-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: var(--bg3);
+  border-radius: var(--radius);
+  padding: 14px;
+  margin-bottom: 10px;
+}
+
+.almost-info { flex: 1; }
+.almost-name { font-size: 14px; font-weight: 600; }
+.almost-sub  { font-size: 12px; color: var(--text2); margin-top: 2px; }
+
+/* Empty states */
+.no-results {
+  text-align: center;
+  padding: 48px 16px;
+}
+.no-results-icon  { font-size: 52px; margin-bottom: 12px; }
+.no-results-title { font-size: 17px; font-weight: 600; margin-bottom: 6px; }
+.no-results-sub   { font-size: 14px; color: var(--text2); }
+
+.empty-home {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  padding: 48px 32px;
+  text-align: center;
+  color: var(--text2);
+  font-size: 15px;
+  line-height: 1.5;
+}

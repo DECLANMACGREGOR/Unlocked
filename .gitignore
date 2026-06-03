@@ -1,0 +1,27 @@
+# Node modules
+preview-server/node_modules/
+screentimeskills-pwa/node_modules/
+
+# Build artifacts
+screentimeskills-pwa/dist/
+
+# Editor
+.vscode/
+
+# Deployment
+.vercel/
+
+# Local screenshots (shoot curated ones separately, don't commit working shots)
+screentimeskills-pwa/ss_*.png
+screentimeskills-pwa/view_*.png
+screentimeskills-pwa/screenshot_*.png
+
+# macOS
+.DS_Store
+
+# Xcode
+*.xcworkspace
+DerivedData/
+
+# Swift packages
+.build

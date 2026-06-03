@@ -1,0 +1,95 @@
+.onboarding {
+  position: fixed;
+  inset: 0;
+  background: var(--bg);
+  display: flex;
+  flex-direction: column;
+  z-index: 200;
+  padding: max(48px, env(safe-area-inset-top)) 32px max(32px, env(safe-area-inset-bottom));
+}
+
+.ob-skip {
+  align-self: flex-end;
+  font-size: 15px;
+  color: var(--text2);
+  padding: 4px 0;
+}
+
+.ob-slides {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.ob-slide {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 20px;
+  animation: ob-fadein 0.35s ease;
+}
+
+@keyframes ob-fadein {
+  from { opacity: 0; transform: translateY(16px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.ob-emoji {
+  font-size: 80px;
+  line-height: 1;
+}
+
+.ob-title {
+  font-size: 28px;
+  font-weight: 800;
+  letter-spacing: -0.5px;
+  line-height: 1.2;
+  white-space: pre-line;
+}
+
+.ob-sub {
+  font-size: 16px;
+  color: var(--text2);
+  line-height: 1.6;
+  max-width: 300px;
+}
+
+.ob-footer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 24px;
+}
+
+.ob-dots {
+  display: flex;
+  gap: 6px;
+}
+
+.ob-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--border);
+  transition: all 0.2s;
+}
+.ob-dot.active {
+  background: var(--accent);
+  width: 20px;
+  border-radius: 3px;
+}
+
+.ob-cta {
+  width: 100%;
+  padding: 18px;
+  border-radius: var(--radius);
+  background: var(--accent);
+  color: #fff;
+  font-size: 17px;
+  font-weight: 700;
+  letter-spacing: -0.2px;
+  transition: transform 0.1s, opacity 0.1s;
+}
+.ob-cta:active { transform: scale(0.98); opacity: 0.9; }

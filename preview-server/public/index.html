@@ -1,0 +1,60 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Unlocked — Live Preview</title>
+  <style>
+    :root{--bg:#f6f2ea;--card:#fff;--muted:#6c6b64;--accent:#c7a97e}
+    html,body{height:100%;margin:0;font-family:Inter, -apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Helvetica,Arial}
+    body{background:var(--bg);color:#fff;display:flex;align-items:center;justify-content:center;padding:24px}
+    .app-shell{width:420px;max-width:100%;box-shadow:0 6px 30px rgba(0,0,0,0.6);border-radius:14px;overflow:hidden;background:linear-gradient(180deg,#000,#07070a)}
+    .app-inner{padding:20px}
+    .header{font-weight:800;font-size:20px;text-align:center;margin-bottom:6px;color:#1f1d18}
+    .sub{font-size:12px;color:var(--muted);text-align:center;margin-bottom:18px}
+    .preview-root{background:linear-gradient(180deg,#fff,#fbf6ee);border-radius:12px;padding:18px;min-height:260px;box-sizing:border-box;border:1px solid rgba(31,29,24,0.04);overflow:auto;color:#1f1d18}
+    .controls{display:flex;gap:10px;justify-content:center;margin-top:14px;margin-bottom:18px}
+    .btn{background:var(--accent);color:#fff;padding:10px 18px;border-radius:999px;font-weight:600;border:none;cursor:pointer;box-shadow:0 6px 18px rgba(91,99,255,0.18)}
+    .muted-pill{background:rgba(255,255,255,0.03);padding:6px 10px;border-radius:999px;font-size:12px;color:var(--muted)}
+    .files-list{margin-top:12px;max-height:200px;overflow:auto;padding-right:6px}
+    .file-item{padding:8px 10px;border-radius:8px;margin-bottom:6px;color:#dfe7ff;cursor:pointer;background:transparent}
+    .file-item.active{background:linear-gradient(90deg,rgba(91,99,255,0.12),rgba(91,99,255,0.06))}
+    .code-panel{background:#05060a;margin-top:12px;border-radius:10px;padding:12px;color:#cbd6ff;font-family:monospace;font-size:12px;max-height:220px;overflow:auto}
+    .bottom-nav{height:64px;background:#05050a;border-top:1px solid rgba(255,255,255,0.02);display:flex;align-items:center;justify-content:space-around}
+    .nav-item{color:var(--muted);font-size:12px}
+    .preview-root .vstack{display:flex;flex-direction:column;gap:8px}
+    .preview-root .hstack{display:flex;gap:8px}
+  </style>
+</head>
+<body>
+  <div class="app-shell">
+    <div class="app-inner">
+      <div class="header">Unlocked</div>
+      <div class="sub">Live preview — edits update instantly</div>
+
+      <div id="preview" class="preview-root">No preview yet.</div>
+
+      <div class="controls">
+        <div class="muted-pill">Today</div>
+        <button class="btn">What could I have learned?</button>
+      </div>
+
+      <div class="files-section">
+        <div style="font-size:13px;color:var(--muted);margin-bottom:8px">Files</div>
+        <div id="file-list" class="files-list"></div>
+      </div>
+
+      <div id="file-path" style="font-size:12px;color:var(--muted);margin-top:10px"></div>
+      <pre id="code" class="code-panel">Waiting for files...</pre>
+    </div>
+    <div class="bottom-nav">
+      <div class="nav-item">Home</div>
+      <div class="nav-item">Library</div>
+      <div class="nav-item">History</div>
+    </div>
+  </div>
+
+  <script src="/socket.io/socket.io.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
