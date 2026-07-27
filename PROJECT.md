@@ -169,7 +169,7 @@ The most complex component. Key internals:
 
 ## Git State
 
-Working on `master` branch. All changes are uncommitted — the full session's work is in the working tree. Push to `main` on GitHub when the project is ready. Declan's GitHub username is `DECLANMACGREGOR`.
+Working on `main`. Commit history is in conventional-commit format. Declan's GitHub username is `DECLANMACGREGOR`.
 
 Never push automatically — always wait for explicit instruction.
 
@@ -183,10 +183,8 @@ Never push automatically — always wait for explicit instruction.
 
 ## Top 3 Tasks
 
-### 1. Clean Up Repo Before GitHub Push
-- Replace hardcoded Windows path in `preview-server/README.md:8` with a relative path (`cd preview-server`)
-- Add `.vscode/` to `.gitignore`
-- Decide which untracked files (screenshot PNGs, `PROJECT.md`, `APP_STORE_APPROVAL_CHECKLIST.md`) should be committed or ignored
+### 1. ~~Clean Up Repo Before GitHub Push~~ — done July 2026
+Hardcoded paths removed, `.vscode/` ignored, docs committed, root README + MIT license added, storage access hardened, branch renamed to `main`.
 
 ### 2. Wire Up Payment Integration
 `usePremium.unlock()` in `hooks/usePremium.js` currently unlocks premium with a single tap — no real purchase. This is the only core feature that has never been validated. Until the paywall flow works end-to-end (purchase, restore, failure states), the PWA cannot serve as a reliable spec for the Swift/StoreKit implementation.
