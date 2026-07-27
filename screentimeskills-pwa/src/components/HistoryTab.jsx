@@ -1,3 +1,4 @@
+import { IconHistory, IconShare, IconLock, IconTrash } from './Icons'
 import './HistoryTab.css'
 
 function exportCSV(history) {
@@ -14,7 +15,7 @@ function exportCSV(history) {
   const url = URL.createObjectURL(blob)
   const a = document.createElement('a')
   a.href = url
-  a.download = 'screentimeskills-history.csv'
+  a.download = 'unlocked-history.csv'
   a.click()
   URL.revokeObjectURL(url)
 }
@@ -48,7 +49,7 @@ export default function HistoryTab({ history, deleteHistoryEntry, onGoHome, isPr
       <div className="history-tab">
         <h1 className="history-title">History</h1>
         <div className="history-empty">
-          <div style={{ fontSize: 52 }}>🕐</div>
+          <IconHistory size={52} color="var(--text2)" />
           <div className="empty-title">No history yet</div>
           <div className="empty-sub">Each time you check your screen time, it gets saved here so you can track your progress over time.</div>
           <button className="history-go-home" onClick={onGoHome}>Log your first entry →</button>
@@ -64,8 +65,8 @@ export default function HistoryTab({ history, deleteHistoryEntry, onGoHome, isPr
       <div className="history-header">
         <h1 className="history-title">History</h1>
         {isPremium
-          ? <button className="export-btn" onClick={() => exportCSV(history)}>📤 Export</button>
-          : <button className="export-btn locked" onClick={onShowPremium}>🔒 Export</button>
+          ? <button className="export-btn" onClick={() => exportCSV(history)}><IconShare size={14} /> Export</button>
+          : <button className="export-btn locked" onClick={onShowPremium}><IconLock size={14} /> Export</button>
         }
       </div>
       <div className="history-list">
@@ -82,7 +83,9 @@ export default function HistoryTab({ history, deleteHistoryEntry, onGoHome, isPr
                 </div>
                 <div className="history-right">
                   <span className="history-date">{relativeDate(entry.recordedAt)}</span>
-                  <button className="history-delete" onClick={() => deleteHistoryEntry(entry.id)}>🗑</button>
+                  <button className="history-delete" onClick={() => deleteHistoryEntry(entry.id)}>
+                    <IconTrash size={16} />
+                  </button>
                 </div>
               </div>
             ))}

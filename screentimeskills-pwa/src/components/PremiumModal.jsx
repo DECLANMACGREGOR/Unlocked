@@ -16,7 +16,7 @@ export default function PremiumModal({ onUnlock, onClose }) {
 
         <div className="premium-hero">
           <div className="premium-hero-icon">✨</div>
-          <h2 className="premium-title">ScreenTimeSkills Premium</h2>
+          <h2 className="premium-title">Unlocked Premium</h2>
           <p className="premium-sub">One small payment. Yours forever.</p>
         </div>
 
