@@ -90,7 +90,7 @@ export default function LibraryTab({ allSkills, customSkills, addCustomSkill, de
   function onCatPointerDown(e) {
     if (e.pointerType === 'touch') return
     catDragMoved.current = false
-    catDrag.current = { startX: e.clientX, startScroll: catRowRef.current.scrollLeft }
+    catDrag.current = { startX: e.clientX, startScroll: catRowRef.current.scrollLeft, target: e.target }
     catRowRef.current.setPointerCapture(e.pointerId)
   }
   function onCatPointerMove(e) {
@@ -100,6 +100,13 @@ export default function LibraryTab({ allSkills, customSkills, addCustomSkill, de
     catRowRef.current.scrollLeft = catDrag.current.startScroll + dx
   }
   function onCatPointerUp() {
+    if (catDrag.current) {
+      // setPointerCapture blocks the native click — fire it manually if no drag occurred
+      if (!catDragMoved.current) {
+        const chip = catDrag.current.target?.closest('.cat-filter-chip')
+        if (chip) chip.click()
+      }
+    }
     catDrag.current = null
     setTimeout(() => { catDragMoved.current = false }, 0)
   }

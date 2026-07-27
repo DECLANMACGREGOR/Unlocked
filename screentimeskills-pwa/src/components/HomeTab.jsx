@@ -438,7 +438,7 @@ export default function HomeTab({ allSkills, addHistoryEntry, history, isPremium
   function onCatPointerDown(e) {
     if (e.pointerType === 'touch') return
     catDragMoved.current = false
-    catDrag.current = { startX: e.clientX, startScroll: catFilterRef.current.scrollLeft }
+    catDrag.current = { startX: e.clientX, startScroll: catFilterRef.current.scrollLeft, target: e.target }
     catFilterRef.current.setPointerCapture(e.pointerId)
   }
   function onCatPointerMove(e) {
@@ -448,6 +448,13 @@ export default function HomeTab({ allSkills, addHistoryEntry, history, isPremium
     catFilterRef.current.scrollLeft = catDrag.current.startScroll + dx
   }
   function onCatPointerUp() {
+    if (catDrag.current) {
+      // setPointerCapture blocks the native click — fire it manually if no drag occurred
+      if (!catDragMoved.current) {
+        const chip = catDrag.current.target?.closest('.skill-cat-chip')
+        if (chip) chip.click()
+      }
+    }
     catDrag.current = null
     setTimeout(() => { catDragMoved.current = false }, 0)
   }
