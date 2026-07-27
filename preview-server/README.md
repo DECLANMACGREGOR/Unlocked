@@ -5,12 +5,12 @@ This lightweight preview watches the `Views` folder and pushes Swift file change
 Quick start:
 
 ```powershell
-cd "c:\Users\declan macgregor\Documents\ScreenTimeSkills\preview-server"
+cd preview-server
 npm install
 npm start
 ```
 
-Open http://localhost:3000 in your browser. The server watches `../Views` and sends updated file contents to the page which renders a basic HTML approximation of SwiftUI.
+Open http://localhost:3000 in your browser. The server watches `../ScreenTimeSkills/Views` and sends updated file contents to the page which renders a basic HTML approximation of SwiftUI.
 
 Notes:
 - This is not a SwiftUI renderer; it provides a fast, heuristic preview and live file updates.

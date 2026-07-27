@@ -23,9 +23,21 @@ io.on('connection', (socket) => {
 function sendAllFiles(socket) {
   const files = getSwiftFiles(WATCH_DIR);
   files.forEach(f => {
-    const content = fs.readFileSync(f, 'utf8');
+    const content = readFileSafe(f);
+    if (content === null) return;
     socket.emit('file-changed', { path: path.relative(path.join(__dirname, '..'), f).replace(/\\/g,'/'), content });
   });
+}
+
+// Editors save via rename, so a change event can fire while the file is
+// briefly missing — don't let a transient ENOENT kill the server.
+function readFileSafe(file) {
+  try {
+    return fs.readFileSync(file, 'utf8');
+  } catch (err) {
+    console.warn('skipped unreadable file', file, err.code);
+    return null;
+  }
 }
 
 function getSwiftFiles(dir) {
@@ -48,7 +60,8 @@ const watcher = chokidar.watch(WATCH_DIR, { ignoreInitial: true, persistent: tru
 
 watcher.on('change', file => {
   console.log('changed', file);
-  const content = fs.readFileSync(file, 'utf8');
+  const content = readFileSafe(file);
+  if (content === null) return;
   io.emit('file-changed', { path: path.relative(path.join(__dirname, '..'), file).replace(/\\/g,'/'), content });
 });
 
