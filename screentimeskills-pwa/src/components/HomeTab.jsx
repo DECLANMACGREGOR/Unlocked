@@ -2,11 +2,12 @@ import { useState, useRef, useEffect } from 'react'
 import { matchSkills } from '../data/skillMatcher'
 import { CATEGORIES } from '../data/skillLibrary'
 import { getPrimaryResource, getSkillResources } from '../data/skillResourceDirectory'
+import { getStored, setStored } from '../lib/storage'
 import WeeklyReport from './WeeklyReport'
 import {
   CATEGORY_ICONS,
   IconFlame, IconPhone, IconLightbulb, IconShare,
-  IconLock, IconStar, IconCheck, IconArrowRight, IconX,
+  IconLock, IconStar, IconCheck, IconArrowRight,
 } from './Icons'
 import './HomeTab.css'
 
@@ -323,7 +324,7 @@ function AlmostRow({ skill, inputHours, onAddHours }) {
   )
 }
 
-function ShareCard({ result, period }) {
+function ShareCard({ result }) {
   const [copied, setCopied] = useState(false)
   const topSkills = result.completable.slice(0, 3).map(s => s.name)
   if (!topSkills.length) return null
@@ -332,10 +333,11 @@ function ShareCard({ result, period }) {
   const text = `In ${hoursDisplay}h of screen time I could have learned: ${topSkills.join(', ')}. What could you learn? → unlocked.app`
 
   function copy() {
-    navigator.clipboard.writeText(text).then(() => {
+    // clipboard API is unavailable in insecure contexts and can be denied
+    navigator.clipboard?.writeText(text).then(() => {
       setCopied(true)
       setTimeout(() => setCopied(false), 2000)
-    })
+    }).catch(() => {})
   }
 
   return (
@@ -355,9 +357,13 @@ function ShareCard({ result, period }) {
 // --- Main component ---
 
 export default function HomeTab({ allSkills, addHistoryEntry, history, isPremium, onShowPremium }) {
-  const [inputText, setInputText] = useState(() => localStorage.getItem('sts_last_hours') || '')
-  const [period, setPeriod]       = useState(() => localStorage.getItem('sts_last_period') || 'This Week')
-  const [result, setResult]       = useState(null)
+  const [inputText, setInputText] = useState(() => getStored('sts_last_hours') || '')
+  const [period, setPeriod]       = useState(() => getStored('sts_last_period') || 'This Week')
+  // Restore the last result so returning users land on their numbers, not a blank form
+  const [result, setResult]       = useState(() => {
+    const saved = parseFloat(getStored('sts_last_hours'))
+    return saved > 0 ? matchSkills(saved, allSkills) : null
+  })
   const [showGuide, setShowGuide] = useState(false)
   const [sliderIndex, setSliderIndex]     = useState(0)
   const [skillCatFilter, setSkillCatFilter] = useState(null)
@@ -390,12 +396,12 @@ export default function HomeTab({ allSkills, addHistoryEntry, history, isPremium
     ? (skillCatFilter ? result.completable.filter(sk => sk.category === skillCatFilter) : result.completable)
     : []
 
-  // Reset slider when filter or result changes
-  useEffect(() => {
+  // Called whenever the filter or result changes so the slider starts at card 1
+  function resetSlider() {
     setSliderIndex(0)
     const t = trackRef.current
     if (t) t.scrollLeft = 0
-  }, [skillCatFilter, result])
+  }
 
   function getSlideWidth() {
     const t = trackRef.current
@@ -475,10 +481,6 @@ export default function HomeTab({ allSkills, addHistoryEntry, history, isPremium
   }
 
   useEffect(() => {
-    const saved = localStorage.getItem('sts_last_hours')
-    if (saved && parseFloat(saved) > 0) {
-      setResult(matchSkills(parseFloat(saved), allSkills))
-    }
     const timer = setTimeout(() => inputRef.current?.focus(), 300)
     return () => clearTimeout(timer)
   }, [])
@@ -497,10 +499,10 @@ export default function HomeTab({ allSkills, addHistoryEntry, history, isPremium
     if (!hours || hours <= 0) return
     setResult(matchSkills(hours, allSkills))
     setSkillCatFilter(null)
-    setSliderIndex(0)
+    resetSlider()
     addHistoryEntry(hours, period)
-    localStorage.setItem('sts_last_hours', inputText)
-    localStorage.setItem('sts_last_period', period)
+    setStored('sts_last_hours', inputText)
+    setStored('sts_last_period', period)
     if (navigator.vibrate) navigator.vibrate(10)
   }
 
@@ -510,7 +512,8 @@ export default function HomeTab({ allSkills, addHistoryEntry, history, isPremium
     const rounded = Math.round(next * 10) / 10
     setInputText(String(rounded))
     setResult(matchSkills(rounded, allSkills))
-    localStorage.setItem('sts_last_hours', String(rounded))
+    resetSlider()
+    setStored('sts_last_hours', String(rounded))
   }
 
   return (
@@ -607,7 +610,7 @@ export default function HomeTab({ allSkills, addHistoryEntry, history, isPremium
               >
                 <button
                   className={`skill-cat-chip ${!skillCatFilter ? 'active' : ''}`}
-                  onClick={() => { if (catDragMoved.current) return; setSkillCatFilter(null) }}
+                  onClick={() => { if (catDragMoved.current) return; setSkillCatFilter(null); resetSlider() }}
                 >All</button>
                 {completableCategories.map(cat => {
                   const CatIcon = CATEGORY_ICONS[cat]
@@ -617,7 +620,7 @@ export default function HomeTab({ allSkills, addHistoryEntry, history, isPremium
                       key={cat}
                       className={`skill-cat-chip ${isActive ? 'active' : ''}`}
                       style={isActive ? { background: CATEGORIES[cat].color, borderColor: CATEGORIES[cat].color } : {}}
-                      onClick={() => { if (catDragMoved.current) return; setSkillCatFilter(isActive ? null : cat) }}
+                      onClick={() => { if (catDragMoved.current) return; setSkillCatFilter(isActive ? null : cat); resetSlider() }}
                     >
                       {CatIcon && <CatIcon size={12} color={isActive ? '#fff' : CATEGORIES[cat].color} />}
                       {CATEGORIES[cat].label}
@@ -706,7 +709,7 @@ export default function HomeTab({ allSkills, addHistoryEntry, history, isPremium
           </section>
 
           {result.completable.length > 0 && (
-            <section><ShareCard result={result} period={period} /></section>
+            <section><ShareCard result={result} /></section>
           )}
 
           {!result.completable.length && !result.almostThere.length && (

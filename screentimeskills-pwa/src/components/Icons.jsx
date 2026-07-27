@@ -206,6 +206,8 @@ export function IconCheck(p) {
 
 // ── Category icon map ─────────────────────────────────────────────────────────
 
+// Lives here rather than in skillLibrary.js so data files stay renderer-free.
+// eslint-disable-next-line react-refresh/only-export-components
 export const CATEGORY_ICONS = {
   languages:   IconLanguages,
   instruments: IconInstruments,
