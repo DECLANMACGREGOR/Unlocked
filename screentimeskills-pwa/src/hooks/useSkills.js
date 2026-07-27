@@ -1,24 +1,19 @@
 import { useState, useCallback } from 'react'
 import { BUILT_IN_SKILLS } from '../data/skillLibrary'
+import { getStored, setStored } from '../lib/storage'
 
 const STORAGE_KEY = 'sts_custom_skills'
 const HISTORY_KEY = 'sts_history'
 
-function loadCustomSkills() {
+function loadJSON(key) {
   try {
-    return JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]')
-  } catch { return [] }
-}
-
-function loadHistory() {
-  try {
-    return JSON.parse(localStorage.getItem(HISTORY_KEY) || '[]')
+    return JSON.parse(getStored(key) || '[]')
   } catch { return [] }
 }
 
 export function useSkills() {
-  const [customSkills, setCustomSkills] = useState(loadCustomSkills)
-  const [history, setHistory] = useState(loadHistory)
+  const [customSkills, setCustomSkills] = useState(() => loadJSON(STORAGE_KEY))
+  const [history, setHistory] = useState(() => loadJSON(HISTORY_KEY))
 
   const allSkills = [...BUILT_IN_SKILLS, ...customSkills]
 
@@ -32,7 +27,7 @@ export function useSkills() {
     }
     setCustomSkills(prev => {
       const next = [...prev, skill]
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(next))
+      setStored(STORAGE_KEY, JSON.stringify(next))
       return next
     })
   }, [])
@@ -40,7 +35,7 @@ export function useSkills() {
   const deleteCustomSkill = useCallback((id) => {
     setCustomSkills(prev => {
       const next = prev.filter(s => s.id !== id)
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(next))
+      setStored(STORAGE_KEY, JSON.stringify(next))
       return next
     })
   }, [])
@@ -50,7 +45,7 @@ export function useSkills() {
       const next = prev.map(s =>
         s.id === id ? { ...s, name, hours: Number(hours), category } : s
       )
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(next))
+      setStored(STORAGE_KEY, JSON.stringify(next))
       return next
     })
   }, [])
@@ -59,7 +54,7 @@ export function useSkills() {
     const entry = { id: Date.now(), hours, period, recordedAt: new Date().toISOString() }
     setHistory(prev => {
       const next = [entry, ...prev]
-      localStorage.setItem(HISTORY_KEY, JSON.stringify(next))
+      setStored(HISTORY_KEY, JSON.stringify(next))
       return next
     })
   }, [])
@@ -67,7 +62,7 @@ export function useSkills() {
   const deleteHistoryEntry = useCallback((id) => {
     setHistory(prev => {
       const next = prev.filter(e => e.id !== id)
-      localStorage.setItem(HISTORY_KEY, JSON.stringify(next))
+      setStored(HISTORY_KEY, JSON.stringify(next))
       return next
     })
   }, [])

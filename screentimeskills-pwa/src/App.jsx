@@ -7,6 +7,7 @@ import HistoryTab from './components/HistoryTab'
 import Onboarding from './components/Onboarding'
 import PremiumModal from './components/PremiumModal'
 import { IconHome, IconLibrary, IconHistory } from './components/Icons'
+import { getStored, setStored } from './lib/storage'
 import './App.css'
 
 const TABS = [
@@ -18,14 +19,14 @@ const TABS = [
 export default function App() {
   const [activeTab, setActiveTab] = useState('home')
   const [showOnboarding, setShowOnboarding] = useState(
-    () => !localStorage.getItem('sts_onboarded')
+    () => !getStored('sts_onboarded')
   )
   const [showPremium, setShowPremium] = useState(false)
   const skillStore = useSkills()
   const { isPremium, unlock } = usePremium()
 
   function handleOnboardingDone() {
-    localStorage.setItem('sts_onboarded', '1')
+    setStored('sts_onboarded', '1')
     setShowOnboarding(false)
   }
 

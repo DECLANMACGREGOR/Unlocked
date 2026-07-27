@@ -1,4 +1,5 @@
 import { useState, useCallback } from 'react'
+import { getStored, setStored, removeStored } from '../lib/storage'
 
 const KEY = 'sts_premium'
 
@@ -9,16 +10,16 @@ const KEY = 'sts_premium'
 
 export function usePremium() {
   const [isPremium, setIsPremium] = useState(
-    () => localStorage.getItem(KEY) === '1'
+    () => getStored(KEY) === '1'
   )
 
   const unlock = useCallback(() => {
-    localStorage.setItem(KEY, '1')
+    setStored(KEY, '1')
     setIsPremium(true)
   }, [])
 
   const revoke = useCallback(() => {
-    localStorage.removeItem(KEY)
+    removeStored(KEY)
     setIsPremium(false)
   }, [])
 
