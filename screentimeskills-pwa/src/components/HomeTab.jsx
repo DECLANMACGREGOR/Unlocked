@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect } from 'react'
 import { matchSkills } from '../data/skillMatcher'
 import { CATEGORIES } from '../data/skillLibrary'
-import { SKILL_RESOURCES } from '../data/skillResources'
+import { getPrimaryResource, getSkillResources } from '../data/skillResourceDirectory'
 import WeeklyReport from './WeeklyReport'
 import {
   CATEGORY_ICONS,
@@ -119,16 +119,22 @@ function ProgressArc({ progress, size = 44, stroke = 4 }) {
   )
 }
 
-function SkillCard({ skill, inputHours, onStartLearning }) {
+function SkillCard({ skill, inputHours, onOpenDetail }) {
   const cat = CATEGORIES[skill.category]
   const CatIcon = CATEGORY_ICONS[skill.category]
   const surplus = inputHours - skill.hours
   const surplusLabel = surplus === 0
     ? 'Perfect fit'
     : `${surplus % 1 === 0 ? surplus : surplus.toFixed(1)}h left over`
+  const primary = getPrimaryResource(skill.name)
+
+  function handleStartLearning(e) {
+    e.stopPropagation()
+    if (primary) window.open(primary.url, '_blank', 'noopener noreferrer')
+  }
 
   return (
-    <div className="skill-card">
+    <div className="skill-card" onClick={() => onOpenDetail && onOpenDetail(skill)}>
       <span className="cat-badge" style={{ background: cat.color }}>
         {CatIcon && <CatIcon size={10} color="#fff" />}
         {cat.label}
@@ -139,24 +145,51 @@ function SkillCard({ skill, inputHours, onStartLearning }) {
       <div className="skill-card-name">{skill.name}</div>
       <div className="skill-card-hours">{skill.hours}h to learn</div>
       <div className="skill-card-surplus">{surplusLabel}</div>
-      <button className="start-learning-btn" onClick={() => onStartLearning(skill)}>
+      <button className="start-learning-btn" onClick={handleStartLearning}>
         Start Learning
       </button>
     </div>
   )
 }
 
+const PLATFORM_COLORS = {
+  youtube:   '#FF0000',
+  app:       '#007AFF',
+  website:   '#6B7280',
+  course:    '#7C3AED',
+  book:      '#92400E',
+  tool:      '#0F766E',
+  community: '#16A34A',
+}
+
+function ResourceRow({ resource }) {
+  const color = PLATFORM_COLORS[resource.platform] || '#6B7280'
+  return (
+    <a
+      href={resource.url}
+      target="_blank"
+      rel="noopener noreferrer"
+      className="resource-row"
+      onClick={e => e.stopPropagation()}
+    >
+      <div className="resource-info">
+        <div className="resource-top-row">
+          <span className="resource-name">{resource.name}</span>
+          <span className="resource-badge" style={{ background: color }}>{resource.platform}</span>
+        </div>
+        <span className="resource-desc">{resource.description}</span>
+      </div>
+    </a>
+  )
+}
+
 function SkillLanding({ skill, isPremium, onShowPremium, onClose }) {
-  const resource = SKILL_RESOURCES[skill.name]
-  const cat = CATEGORIES[skill.category]
+  const allResources = getSkillResources(skill.name)
+  const primary      = allResources[0]
+  const additional   = allResources.slice(1)
+  const cat   = CATEGORIES[skill.category]
   const CatIcon = CATEGORY_ICONS[skill.category]
   const blurb = CATEGORY_BLURBS[skill.category]
-
-  function handleStart() {
-    if (!isPremium) { onShowPremium(); return }
-    if (resource?.url) window.open(resource.url, '_blank', 'noopener noreferrer')
-    else onClose()
-  }
 
   return (
     <div className="landing-overlay" onClick={onClose}>
@@ -176,12 +209,12 @@ function SkillLanding({ skill, isPremium, onShowPremium, onClose }) {
         <div className="landing-stat-row">
           <div className="landing-stat">
             <div className="landing-stat-val">{skill.hours}h</div>
-            <div className="landing-stat-label">Time investment</div>
+            <div className="landing-stat-label">Time needed</div>
           </div>
           <div className="landing-stat-divider" />
           <div className="landing-stat">
-            <div className="landing-stat-val">{cat.label}</div>
-            <div className="landing-stat-label">Category</div>
+            <div className="landing-stat-val">{allResources.length}</div>
+            <div className="landing-stat-label">Free resources</div>
           </div>
           <div className="landing-stat-divider" />
           <div className="landing-stat">
@@ -190,14 +223,55 @@ function SkillLanding({ skill, isPremium, onShowPremium, onClose }) {
           </div>
         </div>
 
-        <button className="landing-cta" onClick={handleStart}>
-          {isPremium && resource
-            ? `Open ${resource.label} →`
-            : <><IconLock size={15} color="#fff" /> Unlock to Start Learning</>
-          }
-        </button>
+        {/* Primary resource — always free */}
+        {primary && (
+          <a
+            href={primary.url}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="landing-cta"
+            onClick={e => e.stopPropagation()}
+          >
+            Start with {primary.name} →
+          </a>
+        )}
 
-        <button className="landing-dismiss" onClick={onClose}>Not now</button>
+        {/* Additional resources — premium gated */}
+        {additional.length > 0 && (
+          <div className="landing-resources">
+            <div className="landing-resources-header">
+              <span className="landing-resources-title">{additional.length} more free resources</span>
+              {!isPremium && (
+                <span className="premium-tag" onClick={e => { e.stopPropagation(); onShowPremium() }}>
+                  <IconStar size={11} color="var(--accent)" /> Premium
+                </span>
+              )}
+            </div>
+            {isPremium ? (
+              additional.map((res, i) => <ResourceRow key={i} resource={res} />)
+            ) : (
+              <div className="resources-locked" onClick={e => { e.stopPropagation(); onShowPremium() }}>
+                {additional.slice(0, 2).map((res, i) => (
+                  <div key={i} className="resource-row locked">
+                    <div className="resource-info blurred">
+                      <div className="resource-top-row">
+                        <span className="resource-name">{res.name}</span>
+                        <span className="resource-badge" style={{ background: PLATFORM_COLORS[res.platform] || '#6B7280' }}>{res.platform}</span>
+                      </div>
+                      <span className="resource-desc">{res.description}</span>
+                    </div>
+                  </div>
+                ))}
+                <div className="resources-unlock-cta">
+                  <IconLock size={13} color="var(--accent)" />
+                  Unlock {additional.length} more resources with Premium
+                </div>
+              </div>
+            )}
+          </div>
+        )}
+
+        <button className="landing-dismiss" onClick={onClose}>Close</button>
       </div>
     </div>
   )
@@ -252,10 +326,10 @@ function AlmostRow({ skill, inputHours, onAddHours }) {
 function ShareCard({ result, period }) {
   const [copied, setCopied] = useState(false)
   const topSkills = result.completable.slice(0, 3).map(s => s.name)
-  const text = topSkills.length
-    ? `In ${result.totalInputHours}h of screen time I could have learned: ${topSkills.join(', ')}. What could you learn? → unlocked.app`
-    : null
-  if (!text) return null
+  if (!topSkills.length) return null
+
+  const hoursDisplay = result.totalHours % 1 === 0 ? result.totalHours : result.totalHours.toFixed(1)
+  const text = `In ${hoursDisplay}h of screen time I could have learned: ${topSkills.join(', ')}. What could you learn? → unlocked.app`
 
   function copy() {
     navigator.clipboard.writeText(text).then(() => {
@@ -266,10 +340,13 @@ function ShareCard({ result, period }) {
 
   return (
     <div className="share-card">
-      <div className="share-preview">{text}</div>
+      <div className="share-card-header">
+        <IconShare size={16} color="var(--accent)" />
+        <span className="share-card-title">Share your result</span>
+      </div>
+      <div className="share-preview">"{text}"</div>
       <button className="share-btn" onClick={copy}>
-        <IconShare size={15} color="#fff" />
-        {copied ? 'Copied!' : 'Share your result'}
+        {copied ? '✓ Copied to clipboard' : 'Copy & Share'}
       </button>
     </div>
   )
@@ -294,8 +371,15 @@ export default function HomeTab({ allSkills, addHistoryEntry, history, isPremium
   const catDrag      = useRef(null)
   const catDragMoved = useRef(false)
 
+  // Skill slider drag (desktop)
+  const sliderDrag      = useRef(null)
+  const sliderDragMoved = useRef(false)
+  const sliderSnapTimer = useRef(null)
+  const sliderSnapping  = useRef(false)
+
   const streak         = getStreak(history)
   const lastPeriodHours = getLastHoursForPeriod(history, period)
+  const hours = parseFloat(inputText) || 0
 
   const fittable = result ? countFittable(result.completable, hours) : 0
 
@@ -313,12 +397,35 @@ export default function HomeTab({ allSkills, addHistoryEntry, history, isPremium
     if (t) t.scrollLeft = 0
   }, [skillCatFilter, result])
 
-  // Track which slide is visible via scroll position
+  function getSlideWidth() {
+    const t = trackRef.current
+    if (!t) return 0
+    const slide = t.querySelector('.slider-slide')
+    return slide ? slide.offsetWidth + 12 : t.offsetWidth
+  }
+
+  function snapToNearest() {
+    const t = trackRef.current
+    if (!t) return
+    const slideW = getSlideWidth()
+    const nearest = Math.round(t.scrollLeft / slideW)
+    sliderSnapping.current = true
+    t.scrollTo({ left: nearest * slideW, behavior: 'smooth' })
+    setTimeout(() => { sliderSnapping.current = false }, 400)
+  }
+
+  // Track which slide is visible; snap on touch scroll-end
   function onTrackScroll() {
     const t = trackRef.current
-    if (!t || !t.offsetWidth) return
-    const idx = Math.round(t.scrollLeft / t.offsetWidth)
+    if (!t) return
+    const slideW = getSlideWidth()
+    const idx = Math.round(t.scrollLeft / slideW)
     if (idx !== sliderIndex) setSliderIndex(idx)
+    // Touch / wheel: snap after scrolling stops
+    if (!sliderDrag.current && !sliderSnapping.current) {
+      if (sliderSnapTimer.current) clearTimeout(sliderSnapTimer.current)
+      sliderSnapTimer.current = setTimeout(snapToNearest, 120)
+    }
   }
 
   // Category chip drag (desktop)
@@ -337,6 +444,34 @@ export default function HomeTab({ allSkills, addHistoryEntry, history, isPremium
   function onCatPointerUp() {
     catDrag.current = null
     setTimeout(() => { catDragMoved.current = false }, 0)
+  }
+
+  // Skill slider drag (desktop)
+  function onSliderPointerDown(e) {
+    if (e.pointerType === 'touch') return
+    sliderDragMoved.current = false
+    sliderDrag.current = { startX: e.clientX, startScroll: trackRef.current.scrollLeft, target: e.target }
+    trackRef.current.setPointerCapture(e.pointerId)
+  }
+  function onSliderPointerMove(e) {
+    if (!sliderDrag.current) return
+    const dx = sliderDrag.current.startX - e.clientX
+    if (Math.abs(dx) > 8) sliderDragMoved.current = true
+    trackRef.current.scrollLeft = sliderDrag.current.startScroll + dx
+  }
+  function onSliderPointerUp() {
+    if (sliderDrag.current) {
+      snapToNearest()
+      // setPointerCapture blocks the native click — fire it manually if no drag occurred
+      if (!sliderDragMoved.current) {
+        const t = sliderDrag.current.target
+        const btn = t?.closest('.start-learning-btn')
+        if (btn) btn.click()
+        else { const card = t?.closest('.skill-card'); if (card) card.click() }
+      }
+    }
+    sliderDrag.current = null
+    setTimeout(() => { sliderDragMoved.current = false }, 0)
   }
 
   useEffect(() => {
@@ -377,8 +512,6 @@ export default function HomeTab({ allSkills, addHistoryEntry, history, isPremium
     setResult(matchSkills(rounded, allSkills))
     localStorage.setItem('sts_last_hours', String(rounded))
   }
-
-  const hours = parseFloat(inputText) || 0
 
   return (
     <div className="home-tab">
@@ -500,15 +633,17 @@ export default function HomeTab({ allSkills, addHistoryEntry, history, isPremium
                     className="slider-track"
                     ref={trackRef}
                     onScroll={onTrackScroll}
+                    onPointerDown={onSliderPointerDown}
+                    onPointerMove={onSliderPointerMove}
+                    onPointerUp={onSliderPointerUp}
+                    onPointerCancel={onSliderPointerUp}
                   >
                     {filteredCompletable.map(sk => (
                       <div key={sk.id} className="slider-slide">
                         <SkillCard
                           skill={sk}
                           inputHours={hours}
-                          isPremium={isPremium}
-                          onShowPremium={onShowPremium}
-                          onStartLearning={setLandingSkill}
+                          onOpenDetail={s => { if (sliderDragMoved.current) return; setLandingSkill(s) }}
                         />
                       </div>
                     ))}
