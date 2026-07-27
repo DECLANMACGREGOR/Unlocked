@@ -1,15 +1,18 @@
+import { IconHistory } from './Icons'
 import './WeeklyReport.css'
 
 function getWeeklyAverages(history) {
   if (history.length < 2) return null
 
-  // Group into ISO weeks
+  // Group into calendar weeks (week-of-year counted from Jan 1).
+  // Week number is zero-padded so the string sort below stays chronological
+  // ("W09" < "W10"; without padding "W10" < "W9" and the trend inverts).
   const weeks = {}
   for (const e of history) {
     const d = new Date(e.recordedAt)
     const jan1 = new Date(d.getFullYear(), 0, 1)
     const week = Math.ceil(((d - jan1) / 86400000 + jan1.getDay() + 1) / 7)
-    const key = `${d.getFullYear()}-W${week}`
+    const key = `${d.getFullYear()}-W${String(week).padStart(2, '0')}`
     if (!weeks[key]) weeks[key] = []
     weeks[key].push(e.hours)
   }
@@ -31,7 +34,7 @@ export default function WeeklyReport({ history }) {
   if (!weeks) {
     return (
       <div className="weekly-report empty">
-        <div className="wr-icon">📈</div>
+        <div className="wr-icon"><IconHistory size={32} color="var(--text2)" /></div>
         <div className="wr-empty-text">Track a few more days to see your progress trend.</div>
       </div>
     )
