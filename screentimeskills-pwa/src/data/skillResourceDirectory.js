@@ -854,32 +854,22 @@ export const SKILL_RESOURCE_DIRECTORY = {
   ],
 }
 
-// ============================================================================
-// HELPER: Get primary resource for a skill (the "Start Learning" link)
-// ============================================================================
+// The "Start Learning" link — always the first (free) entry.
 export function getPrimaryResource(skillName) {
   const resources = SKILL_RESOURCE_DIRECTORY[skillName]
   return resources ? resources[0] : null
 }
 
-// ============================================================================
-// HELPER: Get all resources for a skill
-// ============================================================================
 export function getSkillResources(skillName) {
   return SKILL_RESOURCE_DIRECTORY[skillName] || []
 }
 
-// ============================================================================
-// HELPER: Count total resources
-// ============================================================================
 export function getTotalResourceCount() {
   return Object.values(SKILL_RESOURCE_DIRECTORY)
     .reduce((sum, resources) => sum + resources.length, 0)
 }
 
-// ============================================================================
-// VALIDATION: Check all skills in the library have resources
-// ============================================================================
+// Sanity check for the data itself: every library skill should have resources.
 export function findSkillsWithoutResources(skillLibrary) {
   return skillLibrary
     .map(skill => skill.name)

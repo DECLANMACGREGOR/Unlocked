@@ -1,3 +1,6 @@
+// LEGACY — superseded by skillResourceDirectory.js and imported nowhere.
+// Kept as a reference list of affiliate-program candidates only.
+//
 // Affiliate / resource links per skill name.
 // Swap these URLs for your affiliate-tracked versions when you have accounts set up.
 // Platforms: Duolingo, Coursera, Udemy, freeCodeCamp, YouTube, Skillshare, Amazon, etc.

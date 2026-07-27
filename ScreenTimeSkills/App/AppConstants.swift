@@ -1,8 +1,8 @@
 import SwiftUI
 
 enum AppColors {
-    // Swap these for named Assets.xcassets color sets in Phase 8
-    // Modern cream / muted palette
+    // Modern cream / muted palette — swap for named Assets.xcassets color sets
+    // when the native app gets real design attention
     static let languages   = Color(red: 0.68, green: 0.56, blue: 0.45) // warm tan
     static let instruments = Color(red: 0.82, green: 0.72, blue: 0.60) // light cream
     static let coding      = Color(red: 0.56, green: 0.50, blue: 0.44) // muted taupe

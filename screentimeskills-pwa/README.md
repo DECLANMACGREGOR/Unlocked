@@ -1,16 +1,18 @@
-# React + Vite
+# Unlocked — PWA
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+The active product: a fully client-side Vite/React PWA that converts screen time into the skills you could have learned instead. No backend — all state lives in `localStorage`.
 
-Currently, two official plugins are available:
+```bash
+npm install
+npm run dev      # http://localhost:5173
+npm run build    # production build in dist/
+npx eslint src   # lint
+```
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+See [`../PROJECT.md`](../PROJECT.md) for the full architecture handoff: file structure, design tokens, data flows, and what's not done yet.
 
-## React Compiler
+Key data files:
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
-
-## Expanding the ESLint configuration
-
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+- `src/data/skillLibrary.js` — 120 built-in skills across 10 categories
+- `src/data/skillResourceDirectory.js` — 437 curated free resources (primary data file)
+- `src/data/skillResources.js` — legacy, unimported; kept as an affiliate-links reference
