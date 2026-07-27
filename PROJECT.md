@@ -178,16 +178,3 @@ Never push automatically — always wait for explicit instruction.
 ## The iOS App
 
 `ScreenTimeSkills/` contains a SwiftUI/Swift iOS app. It appears to be an earlier iteration of the same concept. The PWA is the active product. The iOS app is not being actively developed in current sessions but is kept in the same repo.
-
----
-
-## Top 3 Tasks
-
-### 1. ~~Clean Up Repo Before GitHub Push~~ — done July 2026
-Hardcoded paths removed, `.vscode/` ignored, docs committed, root README + MIT license added, storage access hardened, branch renamed to `main`.
-
-### 2. Wire Up Payment Integration
-`usePremium.unlock()` in `hooks/usePremium.js` currently unlocks premium with a single tap — no real purchase. This is the only core feature that has never been validated. Until the paywall flow works end-to-end (purchase, restore, failure states), the PWA cannot serve as a reliable spec for the Swift/StoreKit implementation.
-
-### 3. Audit the Swift App Against the PWA
-The Swift codebase (`ScreenTimeSkills/`) is an earlier iteration of the same concept. Before the translation work begins in earnest, the gap between what exists natively and what the PWA currently does needs to be mapped. This determines whether the Swift work is a polish job or a rebuild.
